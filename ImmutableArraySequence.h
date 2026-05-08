@@ -16,6 +16,11 @@ protected:
         return CloneArraySequence();
     }
 
+    ArraySequence<T> *NewArrayInstance() const override
+    {
+        return new ImmutableArraySequence<T>();
+    }
+
 public:
     ImmutableArraySequence() = default;
 

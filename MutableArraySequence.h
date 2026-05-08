@@ -16,6 +16,11 @@ protected:
         return this;
     }
 
+    ArraySequence<T> *NewArrayInstance() const override
+    {
+        return new MutableArraySequence<T>();
+    }
+
 public:
     MutableArraySequence() = default;
 

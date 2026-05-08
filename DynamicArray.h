@@ -190,6 +190,42 @@ public:
         capacity_ = newCapacity;
     }
 
+    void ShrinkToFit()
+    {
+        if (size_ == capacity_)
+        {
+            return;
+        }
+
+        if (size_ == 0)
+        {
+            delete[] data_;
+            data_ = nullptr;
+            capacity_ = 0;
+            return;
+        }
+
+        T *newData = new T[size_];
+
+        try
+        {
+            for (int i = 0; i < size_; ++i)
+            {
+                newData[i] = data_[i];
+            }
+        }
+        catch (...)
+        {
+            delete[] newData;
+            throw;
+        }
+
+        delete[] data_;
+
+        data_ = newData;
+        capacity_ = size_;
+    }
+
     void Resize(int newSize)
     {
         if (newSize < 0)
@@ -197,6 +233,16 @@ public:
             throw std::invalid_argument("DynamicArray: negative new size");
         }
 
+        if (newSize == 0)
+        {
+            delete[] data_;
+            data_ = nullptr;
+            size_ = 0;
+            capacity_ = 0;
+
+            return;
+        }
+        
         EnsureCapacity(newSize);
 
         for (int i = size_; i < newSize; ++i)

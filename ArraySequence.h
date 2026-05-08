@@ -14,6 +14,7 @@ protected:
 
     virtual ArraySequence<T> *CloneArraySequence() const = 0;
     virtual ArraySequence<T> *Instance() = 0;
+    virtual ArraySequence<T> *NewArrayInstance() const = 0;
 
     void AppendInternal(const T &item)
     {
@@ -93,8 +94,7 @@ public:
             throw std::out_of_range("ArraySequence: subsequence indices out of range");
         }
 
-        ArraySequence<T> *result = CloneArraySequence();
-        result->data_.Resize(0);
+        ArraySequence<T> *result = NewArrayInstance();
 
         try
         {
@@ -199,99 +199,9 @@ public:
         return result;
     }
 
-    Sequence<T> *Map(const std::function<T(const T &)> &func) const override
+    Sequence<T> *NewInstance() const override
     {
-        if (!func)
-        {
-            throw std::invalid_argument("ArraySequence: map func is null");
-        }
-
-        ArraySequence<T> *result = CloneArraySequence();
-        result->data_.Resize(0);
-
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                result->AppendInternal(func(iterator->Next()));
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            delete result;
-            throw;
-        }
-
-        return result;
-    }
-
-    Sequence<T> *Where(const std::function<bool(const T &)> &predicate) const override
-    {
-        if (!predicate)
-        {
-            throw std::invalid_argument("ArraySequence: where predicate is null");
-        }
-
-        ArraySequence<T> *result = CloneArraySequence();
-        result->data_.Resize(0);
-
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                const T &value = iterator->Next();
-
-                if (predicate(value))
-                {
-                    result->AppendInternal(value);
-                }
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            delete result;
-            throw;
-        }
-
-        return result;
-    }
-
-    T Reduce(const std::function<T(const T &, const T &)> &func, const T &initial) const override
-    {
-        if (!func)
-        {
-            throw std::invalid_argument("ArraySequence: reduce func is null");
-        }
-
-        T accumulator = initial;
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                accumulator = func(accumulator, iterator->Next());
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            throw;
-        }
-
-        return accumulator;
+        return NewArrayInstance();
     }
 
     IEnumerator<T> *GetEnumerator() const override

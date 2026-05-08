@@ -14,6 +14,7 @@ protected:
 
     virtual ListSequence<T> *CloneListSequence() const = 0;
     virtual ListSequence<T> *Instance() = 0;
+    virtual ListSequence<T> *NewListInstance() const = 0;
 
     void AppendInternal(const T &item)
     {
@@ -69,7 +70,7 @@ public:
 
         try
         {
-            result = CloneListSequence();
+            result = NewListInstance();
             result->data_ = *subList;
 
             delete subList;
@@ -188,99 +189,9 @@ public:
         return result;
     }
 
-    Sequence<T> *Map(const std::function<T(const T &)> &func) const override
+    Sequence<T> *NewInstance() const override
     {
-        if (!func)
-        {
-            throw std::invalid_argument("ListSequence: map func is null");
-        }
-
-        ListSequence<T> *result = CloneListSequence();
-        result->data_.Clear();
-
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                result->AppendInternal(func(iterator->Next()));
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            delete result;
-            throw;
-        }
-
-        return result;
-    }
-
-    Sequence<T> *Where(const std::function<bool(const T &)> &predicate) const override
-    {
-        if (!predicate)
-        {
-            throw std::invalid_argument("ListSequence: where predicate is null");
-        }
-
-        ListSequence<T> *result = CloneListSequence();
-        result->data_.Clear();
-
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                const T &value = iterator->Next();
-
-                if (predicate(value))
-                {
-                    result->AppendInternal(value);
-                }
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            delete result;
-            throw;
-        }
-
-        return result;
-    }
-
-    T Reduce(const std::function<T(const T &, const T &)> &func, const T &initial) const override
-    {
-        if (!func)
-        {
-            throw std::invalid_argument("ListSequence: reduce func is null");
-        }
-
-        T accumulator = initial;
-        IEnumerator<T> *iterator = GetEnumerator();
-
-        try
-        {
-            while (iterator->HasNext())
-            {
-                accumulator = func(accumulator, iterator->Next());
-            }
-
-            delete iterator;
-        }
-        catch (...)
-        {
-            delete iterator;
-            throw;
-        }
-
-        return accumulator;
+        return NewListInstance();
     }
 
     IEnumerator<T> *GetEnumerator() const override

@@ -16,6 +16,11 @@ protected:
         return CloneListSequence();
     }
 
+    ListSequence<T> *NewListInstance() const override
+    {
+        return new ImmutableListSequence<T>();
+    }
+
 public:
     ImmutableListSequence() = default;
 

@@ -16,6 +16,11 @@ protected:
         return this;
     }
 
+    ListSequence<T> *NewListInstance() const override
+    {
+        return new MutableListSequence<T>();
+    }
+
 public:
     MutableListSequence() = default;
 
