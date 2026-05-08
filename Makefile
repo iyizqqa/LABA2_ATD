@@ -1,5 +1,5 @@
 all:
-	g++ -std=c++17 -Wall -Wextra -Werror main.cpp -o lab2
+	g++ -std=c++17 -Wall -Wextra -Werror main.cpp Tests.cpp -o lab2
 
 run:
 	./lab2 

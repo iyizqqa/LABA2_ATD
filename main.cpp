@@ -1,6 +1,10 @@
 #include <iostream>
 
 #include "Tests.h"
+#include "Sequence.h"
+#include "IEnumerator.h"
+#include "MutableArraySequence.h"
+#include "MutableListSequence.h"
 
 void PrintSequence(const Sequence<int> &sequence)
 {
